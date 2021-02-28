@@ -1,0 +1,3 @@
+#! /bin/sh
+deno run src/main.ts > image.ppm
+display image.ppm
