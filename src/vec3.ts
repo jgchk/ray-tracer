@@ -1,4 +1,4 @@
-import { compose } from 'https://deno.land/x/compose@1.3.2/index.js'
+import { flow } from 'https://deno.land/x/hkts@v0.0.49/fns.ts'
 
 export type Vec3 =
   { x: number; y: number; z: number }
@@ -38,7 +38,7 @@ export const lengthSquared =
   ({ x, y, z }: Vec3) => x*x + y*y + z*z
 
 export const length =
-  compose(Math.sqrt, lengthSquared)
+  flow(lengthSquared, Math.sqrt)
 
 export const unitVector =
   (v: Vec3) =>

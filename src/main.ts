@@ -1,34 +1,19 @@
-import { pipe } from 'https://deno.land/x/compose@1.3.2/index.js'
+import { pipe } from 'https://deno.land/x/hkts@v0.0.49/fns.ts'
 import * as C from './color.ts'
+import * as H from './hittable.ts'
 import * as R from './ray.ts'
 import * as V from './vec3.ts'
-
-const hitSphere =
-  (center: V.Vec3) => (radius: number) => (r: R.Ray) =>
-  {
-    const oc = pipe(r.origin, V.subtract(center))
-    const a = V.lengthSquared(r.direction)
-    const halfB = pipe(oc, V.dot(r.direction))
-    const c = V.lengthSquared(oc) - radius*radius
-    const discriminant = halfB*halfB - a*c
-
-    if (discriminant < 0) {
-      return -1
-    } else {
-      return (-halfB - Math.sqrt(discriminant)) / a
-    }
-  }
+import { Sphere } from './sphere.ts'
 
 const rayColor =
-  (r: R.Ray) => 
+  (r: R.Ray) => (world: H.Hittable) => 
   {
-    let t = hitSphere(V.vec3(0, 0, -1))(0.5)(r)
-    if (t > 0) {
-      const n = pipe(R.at(t)(r), V.subtract(V.vec3(0, 0, -1)), V.unitVector)
-      return V.multiply(0.5)(V.vec3(n.x + 1, n.y + 1, n.z + 1))
-    }
+    const hit = world.hit(r)(0)(Infinity)
+    if (hit)
+      return pipe(hit.normal, V.add(V.vec3(1, 1, 1)), V.multiply(0.5))
+
     const unitDirection = V.unitVector(r.direction)
-    t = 0.5 * (unitDirection.y + 1)
+    const t = 0.5 * (unitDirection.y + 1)
     return pipe(
       pipe(V.vec3(1, 1, 1), V.multiply(1 - t)),
       V.add(pipe(V.vec3(0.5, 0.7, 1), V.multiply(t)))
@@ -42,6 +27,12 @@ const main =
     const aspectRatio = 16 / 9
     const imageWidth = 400
     const imageHeight = Math.floor(imageWidth / aspectRatio)
+
+    // World
+    const world = new H.Hittables([
+      new Sphere(V.vec3(0, 0, -1), 0.5),
+      new Sphere(V.vec3(0, -100.5, -1), 100)
+    ])
 
     // Camera
     const viewportHeight = 2
@@ -76,7 +67,7 @@ const main =
           V.subtract(origin)
         )
         const r = R.ray(origin)(d)
-        const pixelColor = rayColor(r)
+        const pixelColor = rayColor(r)(world)
         C.write(pixelColor)
       }
     }

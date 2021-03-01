@@ -1,6 +1,7 @@
 import * as V from './vec3.ts'
 
-export type Ray = { origin: V.Vec3; direction: V.Vec3 }
+export type Ray =
+  { origin: V.Vec3; direction: V.Vec3 }
 
 export const ray =
   (origin: V.Vec3) => (direction: V.Vec3) =>
