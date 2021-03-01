@@ -1,4 +1,9 @@
+mod color;
+mod vec3;
+
+use color::write_color;
 use std::io::{self, Write};
+use vec3::Vec3;
 
 fn main() {
     // Image
@@ -14,15 +19,12 @@ fn main() {
         eprint!("\rScanlines remaining: {} ", j);
         io::stderr().flush().unwrap();
         for i in 0..IMAGE_WIDTH {
-            let r = (i as f64) / ((IMAGE_WIDTH - 1) as f64);
-            let g = (j as f64) / ((IMAGE_HEIGHT - 1) as f64);
-            let b = 0.25;
-
-            let ir = (255.999 * r) as i32;
-            let ig = (255.999 * g) as i32;
-            let ib = (255.999 * b) as i32;
-
-            println!("{} {} {}", ir, ig, ib)
+            let pixel_color = Vec3 {
+                x: (i as f64) / ((IMAGE_WIDTH - 1) as f64),
+                y: (j as f64) / ((IMAGE_HEIGHT - 1) as f64),
+                z: 0.25,
+            };
+            write_color(&pixel_color);
         }
     }
 
