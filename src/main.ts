@@ -1,14 +1,17 @@
 import { pipe } from 'https://deno.land/x/hkts@v0.0.49/fns.ts'
-import * as C from './color.ts'
-import * as H from './hittable.ts'
-import * as R from './ray.ts'
-import * as V from './vec3.ts'
-import { Sphere } from './sphere.ts'
+
+import * as C from './lib/color.ts'
+import * as R from './lib/ray.ts'
+import * as V from './lib/vec3.ts'
+
+import * as I from './hittables/index.ts'
+import { collection } from './hittables/collection.ts'
+import { sphere } from './hittables/sphere.ts'
 
 const rayColor =
-  (r: R.Ray) => (world: H.Hittable) => 
+  (r: R.Ray) => (world: I.Hittable) => 
   {
-    const hit = world.hit(r)(0)(Infinity)
+    const hit = I.hit(world)(r)(0)(Infinity)
     if (hit)
       return pipe(hit.normal, V.add(V.vec3(1, 1, 1)), V.multiply(0.5))
 
@@ -29,9 +32,9 @@ const main =
     const imageHeight = Math.floor(imageWidth / aspectRatio)
 
     // World
-    const world = new H.Hittables([
-      new Sphere(V.vec3(0, 0, -1), 0.5),
-      new Sphere(V.vec3(0, -100.5, -1), 100)
+    const world = collection([
+      sphere(V.vec3(0, 0, -1), 0.5),
+      sphere(V.vec3(0, -100.5, -1), 100)
     ])
 
     // Camera
