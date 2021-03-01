@@ -1,4 +1,4 @@
-import { HitFunction } from './hittable.ts'
+import { HitFunction } from '../lib/hittable.ts'
 import * as collection from './collection.ts'
 import * as sphere from './sphere.ts'
 

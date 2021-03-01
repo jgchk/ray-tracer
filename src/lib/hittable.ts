@@ -1,20 +1,23 @@
 import { pipe } from 'https://deno.land/x/hkts@v0.0.49/fns.ts'
-import * as R from '../lib/ray.ts'
-import * as V from '../lib/vec3.ts'
+import { Material } from '../materials/index.ts'
+import * as R from './ray.ts'
+import * as V from './vec3.ts'
 
 export type HitRecord =
   {
     p: V.Vec3
     normal: V.Vec3
+    material: Material
     t: number
     isOutside: boolean
   }
 
 export const hitRecord =
-  (t: number, p: V.Vec3, outwardNormal: V.Vec3, isOutside: boolean) =>
+  (t: number, p: V.Vec3, material: Material, outwardNormal: V.Vec3, isOutside: boolean): HitRecord =>
   ({
     t,
     p,
+    material,
     normal: isOutside ? outwardNormal : V.negate(outwardNormal),
     isOutside
   })
@@ -24,4 +27,4 @@ export type HitFunction =
 
 export const isOutside =
   (outwardNormal: V.Vec3) => (r: R.Ray) =>
-  pipe(r.direction, V.dot(outwardNormal)) < 0
+  V.dot(r.direction)(outwardNormal) < 0

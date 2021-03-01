@@ -1,8 +1,12 @@
-import { flow } from 'https://deno.land/x/hkts@v0.0.49/fns.ts'
+import { pipe, flow } from 'https://deno.land/x/hkts@v0.0.49/fns.ts'
 import * as R from '../utils/random.ts'
 
 export type Vec3 =
   { x: number; y: number; z: number }
+
+
+
+// Constructors
 
 export const vec3 = 
   (x: number, y: number, z: number) =>
@@ -29,6 +33,27 @@ export const randomInUnitSphere =
 export const randomUnitVector =
   () =>
   unitVector(randomInUnitSphere())
+
+
+
+// Properties
+
+export const lengthSquared =
+  ({ x, y, z }: Vec3) => x*x + y*y + z*z
+
+export const length =
+  flow(lengthSquared, Math.sqrt)
+
+export const nearZero =
+  ({ x, y, z }: Vec3) =>
+  {
+    const s = 1e-8
+    return (Math.abs(x) < s) && (Math.abs(y) < s) && (Math.abs(z) < s)
+  }
+
+
+
+// Operations
 
 export const multiply =
   (s: number) => (v: Vec3) =>
@@ -57,12 +82,6 @@ export const subtract =
   (b: Vec3) => (a: Vec3) =>
   add(a)(negate(b))
 
-export const lengthSquared =
-  ({ x, y, z }: Vec3) => x*x + y*y + z*z
-
-export const length =
-  flow(lengthSquared, Math.sqrt)
-
 export const unitVector =
   (v: Vec3) =>
   divide(length(v))(v)
@@ -70,3 +89,23 @@ export const unitVector =
 export const dot =
   (b: Vec3) => (a: Vec3) =>
   a.x*b.x + a.y*b.y + a.z*b.z
+
+export const reflect =
+  (n: Vec3) => (v: Vec3) =>
+  pipe(
+    v,
+    subtract(
+      pipe(
+        n,
+        multiply(2 * dot(v)(n))
+      )
+    )
+  )
+
+export const attenuate =
+  (attenuation: Vec3) => (v: Vec3) =>
+  ({
+    x: attenuation.x * v.x,
+    y: attenuation.y * v.y,
+    z: attenuation.z * v.z
+  })

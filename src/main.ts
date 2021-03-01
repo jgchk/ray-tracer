@@ -4,26 +4,28 @@ import * as R from './lib/ray.ts'
 import * as V from './lib/vec3.ts'
 import * as C from './lib/camera.ts'
 
-import * as I from './hittables/index.ts'
+import * as H from './hittables/index.ts'
 import { collection } from './hittables/collection.ts'
 import { sphere } from './hittables/sphere.ts'
+
+import * as M from './materials/index.ts'
+import { lambertian } from './materials/lambertian.ts'
+import { metal } from './materials/metal.ts'
 
 import { write } from './utils/color.ts'
 import { random } from './utils/random.ts'
 
 const rayColor =
-  (r: R.Ray) => (world: I.Hittable) => (depth: number): V.Vec3 => 
+  (r: R.Ray) => (world: H.Hittable) => (depth: number): V.Vec3 => 
   {
     if (depth <= 0)
       return V.vec3(0, 0, 0)
 
-    const hit = I.hit(world)(r)(0.001)(Infinity)
+    const hit = H.hit(world)(r)(0.001)(Infinity)
     if (hit) {
-      const target = pipe(hit.p, V.add(hit.normal), V.add(V.randomUnitVector()))
-      return pipe(
-        rayColor(R.ray(hit.p)(pipe(target, V.subtract(hit.p))))(world)(depth - 1),
-        V.multiply(0.5)
-      )
+      const scatter = M.scatter(hit.material)(r)(hit)
+      if (!scatter) return V.vec3(0, 0, 0)
+      return V.attenuate(scatter.attenuation)(rayColor(scatter.scattered)(world)(depth - 1))
     }
 
     const unitDirection = V.unitVector(r.direction)
@@ -45,9 +47,15 @@ const main =
     const maxDepth = 50
 
     // World
+    const materialGround = lambertian(V.vec3(0.8, 0.8, 0))
+    const materialCenter = lambertian(V.vec3(0.7, 0.3, 0.3))
+    const materialLeft = metal(V.vec3(0.8, 0.8, 0.8))
+    const materialRight = metal(V.vec3(0.8, 0.6, 0.2))
     const world = collection([
-      sphere(V.vec3(0, 0, -1), 0.5),
-      sphere(V.vec3(0, -100.5, -1), 100)
+      sphere(V.vec3(0, -100.5, -1), 100, materialGround),
+      sphere(V.vec3(0, 0, -1), 0.5, materialCenter),
+      sphere(V.vec3(-1, 0, -1), 0.5, materialLeft),
+      sphere(V.vec3(1, 0, -1), 0.5, materialRight)
     ])
 
     // Camera

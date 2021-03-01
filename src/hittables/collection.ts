@@ -1,6 +1,6 @@
+import { HitRecord } from '../lib/hittable.ts'
 import { Ray } from '../lib/ray.ts'
 import * as I from './index.ts'
-import { HitRecord } from './hittable.ts'
 
 export type Collection =
   { tag: 'Collection', hittables: I.Hittable[] }
