@@ -7,5 +7,5 @@ export const ray =
   ({ origin, direction })
 
 export const at =
-  ({ origin, direction }: Ray) => (t: number) =>
+  (t: number) => ({ origin, direction }: Ray) =>
   V.add(origin)(V.multiply(t)(direction))

@@ -7,20 +7,28 @@ const hitSphere =
   (center: V.Vec3) => (radius: number) => (r: R.Ray) =>
   {
     const oc = pipe(r.origin, V.subtract(center))
-    const a = V.dot(r.direction)(r.direction)
-    const b = 2 * pipe(oc, V.dot(r.direction))
-    const c = V.dot(oc)(oc) - radius*radius
-    const discriminant = b*b - 4*a*c
-    return discriminant > 0
+    const a = V.lengthSquared(r.direction)
+    const halfB = pipe(oc, V.dot(r.direction))
+    const c = V.lengthSquared(oc) - radius*radius
+    const discriminant = halfB*halfB - a*c
+
+    if (discriminant < 0) {
+      return -1
+    } else {
+      return (-halfB - Math.sqrt(discriminant)) / a
+    }
   }
 
 const rayColor =
   (r: R.Ray) => 
   {
-    if (hitSphere(V.vec3(0)(0)(-1))(0.5)(r))
-      return V.vec3(1)(0)(0)
+    let t = hitSphere(V.vec3(0)(0)(-1))(0.5)(r)
+    if (t > 0) {
+      const n = pipe(R.at(t)(r), V.subtract(V.vec3(0)(0)(-1)), V.unitVector)
+      return V.multiply(0.5)(V.vec3(n.x + 1)(n.y + 1)(n.z + 1))
+    }
     const unitDirection = V.unitVector(r.direction)
-    const t = 0.5 * (unitDirection.y + 1)
+    t = 0.5 * (unitDirection.y + 1)
     return pipe(
       pipe(V.vec3(1)(1)(1), V.multiply(1 - t)),
       V.add(pipe(V.vec3(0.5)(0.7)(1), V.multiply(t)))
