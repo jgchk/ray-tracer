@@ -9,6 +9,7 @@ import { collection } from './hittables/collection.ts'
 import { sphere } from './hittables/sphere.ts'
 
 import * as M from './materials/index.ts'
+import { dialectric } from './materials/dialectric.ts'
 import { lambertian } from './materials/lambertian.ts'
 import { metal } from './materials/metal.ts'
 
@@ -48,14 +49,15 @@ const main =
 
     // World
     const materialGround = lambertian(V.vec3(0.8, 0.8, 0))
-    const materialCenter = lambertian(V.vec3(0.7, 0.3, 0.3))
-    const materialLeft = metal(V.vec3(0.8, 0.8, 0.8), 0.3)
-    const materialRight = metal(V.vec3(0.8, 0.6, 0.2), 1)
+    const materialCenter = lambertian(V.vec3(0.1, 0.2, 0.5))
+    const materialLeft = dialectric(1.5)
+    const materialRight = metal(V.vec3(0.8, 0.6, 0.2), 0)
     const world = collection([
       sphere(V.vec3(0, -100.5, -1), 100, materialGround),
       sphere(V.vec3(0, 0, -1), 0.5, materialCenter),
       sphere(V.vec3(-1, 0, -1), 0.5, materialLeft),
-      sphere(V.vec3(1, 0, -1), 0.5, materialRight)
+      sphere(V.vec3(-1, 0, -1), -0.4, materialLeft),
+      sphere(V.vec3(1, 0, -1), 0.5, materialRight),
     ])
 
     // Camera

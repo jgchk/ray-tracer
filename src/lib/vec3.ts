@@ -90,6 +90,14 @@ export const dot =
   (b: Vec3) => (a: Vec3) =>
   a.x*b.x + a.y*b.y + a.z*b.z
 
+export const attenuate =
+  (attenuation: Vec3) => (v: Vec3) =>
+  ({
+    x: attenuation.x * v.x,
+    y: attenuation.y * v.y,
+    z: attenuation.z * v.z
+  })
+
 export const reflect =
   (n: Vec3) => (v: Vec3) =>
   pipe(
@@ -102,10 +110,11 @@ export const reflect =
     )
   )
 
-export const attenuate =
-  (attenuation: Vec3) => (v: Vec3) =>
-  ({
-    x: attenuation.x * v.x,
-    y: attenuation.y * v.y,
-    z: attenuation.z * v.z
-  })
+export const refract =
+  (uv: Vec3) => (n: Vec3) => (etaiOverEtat: number) =>
+  {
+    const cosTheta = Math.min(dot(negate(uv))(n), 1)
+    const rOutPerp = multiply(etaiOverEtat)(add(uv)(multiply(cosTheta)(n)))
+    const rOutParallel = multiply(-Math.sqrt(Math.abs(1 - lengthSquared(rOutPerp))))(n)
+    return add(rOutPerp)(rOutParallel)
+  }
