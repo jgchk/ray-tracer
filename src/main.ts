@@ -49,8 +49,8 @@ const main =
     // World
     const materialGround = lambertian(V.vec3(0.8, 0.8, 0))
     const materialCenter = lambertian(V.vec3(0.7, 0.3, 0.3))
-    const materialLeft = metal(V.vec3(0.8, 0.8, 0.8))
-    const materialRight = metal(V.vec3(0.8, 0.6, 0.2))
+    const materialLeft = metal(V.vec3(0.8, 0.8, 0.8), 0.3)
+    const materialRight = metal(V.vec3(0.8, 0.6, 0.2), 1)
     const world = collection([
       sphere(V.vec3(0, -100.5, -1), 100, materialGround),
       sphere(V.vec3(0, 0, -1), 0.5, materialCenter),
