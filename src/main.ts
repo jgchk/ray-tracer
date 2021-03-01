@@ -1,7 +1,7 @@
+import { pipe } from 'https://deno.land/x/compose@1.3.2/index.js'
 import * as C from './color.ts'
 import * as R from './ray.ts'
 import * as V from './vec3.ts'
-import { pipe } from 'https://deno.land/x/compose@1.3.2/index.js'
 
 const rayColor = (r: R.Ray) => {
   const unitDirection = V.unitVector(r.direction)
