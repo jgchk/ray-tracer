@@ -18,6 +18,10 @@ impl Vec3 {
     pub fn unit_vector(&self) -> Vec3 {
         self / self.length()
     }
+
+    pub fn dot(&self, other: &Vec3) -> f64 {
+        self.x * other.x + self.y * other.y + self.z * other.z
+    }
 }
 
 impl Add for &Vec3 {
