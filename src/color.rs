@@ -1,4 +1,4 @@
-use super::vec3::Vec3;
+use crate::Vec3;
 
 pub fn write_color(color: &Vec3) {
     // Write the translated [0,255] value of each color component
