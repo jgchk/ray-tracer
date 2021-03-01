@@ -4,7 +4,7 @@ export type Vec3 =
   { x: number; y: number; z: number }
 
 export const vec3 = 
-  (x: number) => (y: number) => (z: number) =>
+  (x: number, y: number, z: number) =>
   ({ x, y, z })
 
 export const multiply =

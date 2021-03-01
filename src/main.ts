@@ -22,16 +22,16 @@ const hitSphere =
 const rayColor =
   (r: R.Ray) => 
   {
-    let t = hitSphere(V.vec3(0)(0)(-1))(0.5)(r)
+    let t = hitSphere(V.vec3(0, 0, -1))(0.5)(r)
     if (t > 0) {
-      const n = pipe(R.at(t)(r), V.subtract(V.vec3(0)(0)(-1)), V.unitVector)
-      return V.multiply(0.5)(V.vec3(n.x + 1)(n.y + 1)(n.z + 1))
+      const n = pipe(R.at(t)(r), V.subtract(V.vec3(0, 0, -1)), V.unitVector)
+      return V.multiply(0.5)(V.vec3(n.x + 1, n.y + 1, n.z + 1))
     }
     const unitDirection = V.unitVector(r.direction)
     t = 0.5 * (unitDirection.y + 1)
     return pipe(
-      pipe(V.vec3(1)(1)(1), V.multiply(1 - t)),
-      V.add(pipe(V.vec3(0.5)(0.7)(1), V.multiply(t)))
+      pipe(V.vec3(1, 1, 1), V.multiply(1 - t)),
+      V.add(pipe(V.vec3(0.5, 0.7, 1), V.multiply(t)))
     )
   }
 
@@ -48,14 +48,14 @@ const main =
     const viewportWidth = aspectRatio * viewportHeight
     const focalLength = 1
 
-    const origin = V.vec3(0)(0)(0)
-    const horizontal = V.vec3(viewportWidth)(0)(0)
-    const vertical = V.vec3(0)(viewportHeight)(0)
+    const origin = V.vec3(0, 0, 0)
+    const horizontal = V.vec3(viewportWidth, 0, 0)
+    const vertical = V.vec3(0, viewportHeight, 0)
     const lowerLeftCorner = pipe(
       origin,
       V.subtract(pipe(horizontal, V.divide(2))),
       V.subtract(pipe(vertical, V.divide(2))),
-      V.subtract(V.vec3(0)(0)(focalLength)),
+      V.subtract(V.vec3(0, 0, focalLength)),
     )
 
     // Render
