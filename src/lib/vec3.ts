@@ -30,9 +30,20 @@ export const randomInUnitSphere =
     }
   }
 
+export const randomInUnitDisk =
+  () => 
+  {
+    while (true) {
+      const p = vec3(R.randomRange(-1)(1), R.randomRange(-1)(1), 0)
+      if (lengthSquared(p) < 1)
+        return p
+    }
+  }
+
 export const randomUnitVector =
   () =>
   unitVector(randomInUnitSphere())
+
 
 
 
@@ -87,8 +98,16 @@ export const unitVector =
   divide(length(v))(v)
 
 export const dot =
-  (b: Vec3) => (a: Vec3) =>
-  a.x*b.x + a.y*b.y + a.z*b.z
+  (v: Vec3) => (u: Vec3) =>
+  u.x*v.x + u.y*v.y + u.z*v.z
+
+export const cross =
+  (v: Vec3) => (u: Vec3) =>
+  ({
+    x: u.y * v.z - u.z * v.y,
+    y: u.z * v.x - u.x * v.z,
+    z: u.x * v.y - u.y * v.x
+  })
 
 export const attenuate =
   (attenuation: Vec3) => (v: Vec3) =>

@@ -56,14 +56,17 @@ const main =
       sphere(V.vec3(0, -100.5, -1), 100, materialGround),
       sphere(V.vec3(0, 0, -1), 0.5, materialCenter),
       sphere(V.vec3(-1, 0, -1), 0.5, materialLeft),
-      sphere(V.vec3(-1, 0, -1), -0.4, materialLeft),
+      sphere(V.vec3(-1, 0, -1), -0.45, materialLeft),
       sphere(V.vec3(1, 0, -1), 0.5, materialRight),
     ])
 
     // Camera
-    const viewportHeight = 2
-    const viewportWidth = aspectRatio * viewportHeight
-    const camera = C.camera(V.vec3(0, 0, 0), viewportWidth, viewportHeight, 1)
+    const lookFrom = V.vec3(3, 3, 2)
+    const lookAt = V.vec3(0, 0, -1)
+    const vUp = V.vec3(0, 1, 0)
+    const distToFocus = V.length(pipe(lookFrom, V.subtract(lookAt)))
+    const aperture = 2
+    const camera = C.camera(lookFrom, lookAt, vUp, 20, aspectRatio, aperture, distToFocus)
 
     // Render
     console.log('P3')
