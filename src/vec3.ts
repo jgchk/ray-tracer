@@ -43,3 +43,7 @@ export const length =
 export const unitVector =
   (v: Vec3) =>
   divide(length(v))(v)
+
+export const dot =
+  (b: Vec3) => (a: Vec3) =>
+  a.x*b.x + a.y*b.y + a.z*b.z
