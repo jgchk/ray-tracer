@@ -1,4 +1,5 @@
 import { flow } from 'https://deno.land/x/hkts@v0.0.49/fns.ts'
+import * as R from '../utils/random.ts'
 
 export type Vec3 =
   { x: number; y: number; z: number }
@@ -6,6 +7,28 @@ export type Vec3 =
 export const vec3 = 
   (x: number, y: number, z: number) =>
   ({ x, y, z })
+
+export const random =
+  () =>
+  vec3(R.random(), R.random(), R.random())
+
+export const randomRange =
+  (min: number) => (max: number) =>
+  vec3(R.randomRange(min)(max), R.randomRange(min)(max), R.randomRange(min)(max))
+
+export const randomInUnitSphere =
+  () =>
+  {
+    while (true) {
+      const p = randomRange(-1)(1)
+      if (lengthSquared(p) < 1)
+        return p
+    }
+  }
+
+export const randomUnitVector =
+  () =>
+  unitVector(randomInUnitSphere())
 
 export const multiply =
   (s: number) => (v: Vec3) =>

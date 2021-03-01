@@ -12,11 +12,19 @@ import { write } from './utils/color.ts'
 import { random } from './utils/random.ts'
 
 const rayColor =
-  (r: R.Ray) => (world: I.Hittable) => 
+  (r: R.Ray) => (world: I.Hittable) => (depth: number): V.Vec3 => 
   {
-    const hit = I.hit(world)(r)(0)(Infinity)
-    if (hit)
-      return pipe(hit.normal, V.add(V.vec3(1, 1, 1)), V.multiply(0.5))
+    if (depth <= 0)
+      return V.vec3(0, 0, 0)
+
+    const hit = I.hit(world)(r)(0.001)(Infinity)
+    if (hit) {
+      const target = pipe(hit.p, V.add(hit.normal), V.add(V.randomUnitVector()))
+      return pipe(
+        rayColor(R.ray(hit.p)(pipe(target, V.subtract(hit.p))))(world)(depth - 1),
+        V.multiply(0.5)
+      )
+    }
 
     const unitDirection = V.unitVector(r.direction)
     const t = 0.5 * (unitDirection.y + 1)
@@ -34,6 +42,7 @@ const main =
     const imageWidth = 400
     const imageHeight = Math.floor(imageWidth / aspectRatio)
     const samplesPerPixel = 100
+    const maxDepth = 50
 
     // World
     const world = collection([
@@ -59,7 +68,7 @@ const main =
           const u = (i + random()) / (imageWidth - 1)
           const v = (j + random()) / (imageHeight - 1)
           const r = C.getRay(u)(v)(camera)
-          color = V.add(rayColor(r)(world))(color)
+          color = V.add(rayColor(r)(world)(maxDepth))(color)
         }
         write(samplesPerPixel)(color)
       }
