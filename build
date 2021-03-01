@@ -1,0 +1,3 @@
+#! /bin/sh
+cargo run > image.ppm
+display image.ppm
