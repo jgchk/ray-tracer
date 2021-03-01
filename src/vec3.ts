@@ -1,4 +1,4 @@
-import { compose, pipeline } from 'https://deno.land/x/compose@1.3.2/index.js'
+import { compose } from 'https://deno.land/x/compose@1.3.2/index.js'
 
 export type Vec3 =
   { x: number; y: number; z: number }
