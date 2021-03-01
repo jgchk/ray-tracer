@@ -1,12 +1,15 @@
 import { pipe } from 'https://deno.land/x/hkts@v0.0.49/fns.ts'
 
-import * as C from './lib/color.ts'
 import * as R from './lib/ray.ts'
 import * as V from './lib/vec3.ts'
+import * as C from './lib/camera.ts'
 
 import * as I from './hittables/index.ts'
 import { collection } from './hittables/collection.ts'
 import { sphere } from './hittables/sphere.ts'
+
+import { write } from './utils/color.ts'
+import { random } from './utils/random.ts'
 
 const rayColor =
   (r: R.Ray) => (world: I.Hittable) => 
@@ -30,6 +33,7 @@ const main =
     const aspectRatio = 16 / 9
     const imageWidth = 400
     const imageHeight = Math.floor(imageWidth / aspectRatio)
+    const samplesPerPixel = 100
 
     // World
     const world = collection([
@@ -40,17 +44,7 @@ const main =
     // Camera
     const viewportHeight = 2
     const viewportWidth = aspectRatio * viewportHeight
-    const focalLength = 1
-
-    const origin = V.vec3(0, 0, 0)
-    const horizontal = V.vec3(viewportWidth, 0, 0)
-    const vertical = V.vec3(0, viewportHeight, 0)
-    const lowerLeftCorner = pipe(
-      origin,
-      V.subtract(pipe(horizontal, V.divide(2))),
-      V.subtract(pipe(vertical, V.divide(2))),
-      V.subtract(V.vec3(0, 0, focalLength)),
-    )
+    const camera = C.camera(V.vec3(0, 0, 0), viewportWidth, viewportHeight, 1)
 
     // Render
     console.log('P3')
@@ -60,18 +54,14 @@ const main =
     for (let j = imageHeight - 1; j >= 0; j--) {
       console.error(`Scanlines remaining: ${j}`)
       for (let i = 0; i < imageWidth; i++) {
-        const u = i / (imageWidth - 1)
-        const v = j / (imageHeight - 1)
-
-        const d = pipe(
-          lowerLeftCorner,
-          V.add(pipe(horizontal, V.multiply(u))),
-          V.add(pipe(vertical, V.multiply(v))),
-          V.subtract(origin)
-        )
-        const r = R.ray(origin)(d)
-        const pixelColor = rayColor(r)(world)
-        C.write(pixelColor)
+        let color = V.vec3(0, 0, 0)
+        for (let s = 0; s < samplesPerPixel; s++) {
+          const u = (i + random()) / (imageWidth - 1)
+          const v = (j + random()) / (imageHeight - 1)
+          const r = C.getRay(u)(v)(camera)
+          color = V.add(rayColor(r)(world))(color)
+        }
+        write(samplesPerPixel)(color)
       }
     }
 
