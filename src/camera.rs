@@ -16,24 +16,10 @@ impl Camera {
         let focal_length = 1.0;
 
         let origin = Vec3::origin();
-        let horizontal = Vec3 {
-            x: viewport_width,
-            y: 0.0,
-            z: 0.0,
-        };
-        let vertical = Vec3 {
-            x: 0.0,
-            y: viewport_height,
-            z: 0.0,
-        };
-        let lower_left_corner = &origin
-            - &horizontal / 2.0
-            - &vertical / 2.0
-            - Vec3 {
-                x: 0.0,
-                y: 0.0,
-                z: focal_length,
-            };
+        let horizontal = Vec3(viewport_width, 0.0, 0.0);
+        let vertical = Vec3(0.0, viewport_height, 0.0);
+        let lower_left_corner =
+            &origin - &horizontal / 2.0 - &vertical / 2.0 - Vec3(0.0, 0.0, focal_length);
         Camera {
             origin,
             lower_left_corner,

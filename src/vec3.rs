@@ -2,15 +2,11 @@ use core::ops::{Add, Div, Mul, Sub};
 use std::ops::Neg;
 
 #[derive(Copy, Clone)]
-pub struct Vec3 {
-    pub x: f64,
-    pub y: f64,
-    pub z: f64,
-}
+pub struct Vec3(pub f64, pub f64, pub f64);
 
 impl Vec3 {
     pub fn length_squared(&self) -> f64 {
-        self.x * self.x + self.y * self.y + self.z * self.z
+        self.0 * self.0 + self.1 * self.1 + self.2 * self.2
     }
 
     pub fn length(&self) -> f64 {
@@ -22,15 +18,11 @@ impl Vec3 {
     }
 
     pub fn dot(&self, other: &Vec3) -> f64 {
-        self.x * other.x + self.y * other.y + self.z * other.z
+        self.0 * other.0 + self.1 * other.1 + self.2 * other.2
     }
 
     pub fn origin() -> Vec3 {
-        Vec3 {
-            x: 0.0,
-            y: 0.0,
-            z: 0.0,
-        }
+        Vec3(0.0, 0.0, 0.0)
     }
 }
 
@@ -38,11 +30,7 @@ impl Neg for Vec3 {
     type Output = Vec3;
 
     fn neg(self) -> Vec3 {
-        Vec3 {
-            x: self.x,
-            y: self.y,
-            z: self.z,
-        }
+        Vec3(-self.0, -self.1, -self.2)
     }
 }
 
@@ -50,11 +38,7 @@ impl Add for &Vec3 {
     type Output = Vec3;
 
     fn add(self, other: &Vec3) -> Vec3 {
-        Vec3 {
-            x: self.x + other.x,
-            y: self.y + other.y,
-            z: self.z + other.z,
-        }
+        Vec3(self.0 + other.0, self.1 + other.1, self.2 + other.2)
     }
 }
 
@@ -86,11 +70,7 @@ impl Sub for &Vec3 {
     type Output = Vec3;
 
     fn sub(self, other: &Vec3) -> Vec3 {
-        Vec3 {
-            x: self.x - other.x,
-            y: self.y - other.y,
-            z: self.z - other.z,
-        }
+        Vec3(self.0 - other.0, self.1 - other.1, self.2 - other.2)
     }
 }
 
@@ -122,11 +102,7 @@ impl Mul<f64> for &Vec3 {
     type Output = Vec3;
 
     fn mul(self, other: f64) -> Vec3 {
-        Vec3 {
-            x: self.x * other,
-            y: self.y * other,
-            z: self.z * other,
-        }
+        Vec3(self.0 * other, self.1 * other, self.2 * other)
     }
 }
 
