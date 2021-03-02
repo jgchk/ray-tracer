@@ -1,6 +1,7 @@
 use core::ops::{Add, Div, Mul, Sub};
 use std::ops::Neg;
 
+#[derive(Copy, Clone)]
 pub struct Vec3 {
     pub x: f64,
     pub y: f64,
