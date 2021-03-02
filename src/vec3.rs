@@ -1,4 +1,5 @@
 use core::ops::{Add, Div, Mul, Sub};
+use std::ops::Neg;
 
 pub struct Vec3 {
     pub x: f64,
@@ -21,6 +22,26 @@ impl Vec3 {
 
     pub fn dot(&self, other: &Vec3) -> f64 {
         self.x * other.x + self.y * other.y + self.z * other.z
+    }
+
+    pub fn origin() -> Vec3 {
+        Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        }
+    }
+}
+
+impl Neg for Vec3 {
+    type Output = Vec3;
+
+    fn neg(self) -> Vec3 {
+        Vec3 {
+            x: self.x,
+            y: self.y,
+            z: self.z,
+        }
     }
 }
 
