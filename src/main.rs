@@ -18,9 +18,23 @@ use crate::vec3::Vec3;
 use std::f64::INFINITY;
 use std::io::{self, Write};
 
-fn ray_color<T: Hittable>(r: &Ray, world: &T) -> Vec3 {
-    match world.hit(r, 0.0, INFINITY) {
-        Some(hit) => 0.5 * (hit.normal + Vec3(1.0, 1.0, 1.0)),
+fn ray_color<T: Hittable>(r: &Ray, world: &T, depth: i32) -> Vec3 {
+    if depth <= 0 {
+        return Vec3::origin();
+    }
+
+    match world.hit(r, 0.001, INFINITY) {
+        Some(hit) => {
+            let target = hit.p + hit.normal + Vec3::random_unit_vector();
+            0.5 * ray_color(
+                &Ray {
+                    origin: hit.p,
+                    direction: target - hit.p,
+                },
+                world,
+                depth - 1,
+            )
+        }
         None => {
             let unit_direction = r.direction.unit_vector();
             let t = 0.5 * (unit_direction.1 + 1.0);
@@ -36,6 +50,7 @@ fn main() {
     const IMAGE_WIDTH: i32 = 400;
     const IMAGE_HEIGHT: i32 = ((IMAGE_WIDTH as f64) / ASPECT_RATIO) as i32;
     const SAMPLES_PER_PIXEL: i32 = 100;
+    const MAX_DEPTH: i32 = 50;
 
     // World
 
@@ -69,7 +84,7 @@ fn main() {
                 let u = ((i as f64) + random_double()) / ((IMAGE_WIDTH - 1) as f64);
                 let v = ((j as f64) + random_double()) / ((IMAGE_HEIGHT - 1) as f64);
                 let r = cam.get_ray(u, v);
-                pixel_color = pixel_color + ray_color(&r, &world);
+                pixel_color = pixel_color + ray_color(&r, &world, MAX_DEPTH);
             }
             write_color(&pixel_color, SAMPLES_PER_PIXEL);
         }
