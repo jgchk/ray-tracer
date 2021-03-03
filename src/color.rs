@@ -1,7 +1,7 @@
 use crate::utils::clamp;
 use crate::Vec3;
 
-pub fn write_color(color: &Vec3, samples_per_pixel: i32) {
+pub fn write_color(color: Vec3, samples_per_pixel: i32) {
     let scale = 1.0 / (samples_per_pixel as f64);
     let r = color.0 * scale;
     let g = color.1 * scale;
