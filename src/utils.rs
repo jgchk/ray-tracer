@@ -6,7 +6,7 @@ pub fn random_double() -> f64 {
 
 pub fn random_range(min: f64, max: f64) -> f64 {
     // Returns a random real in [min,max)
-    return min + (max - min) * random_double();
+    min + (max - min) * random_double()
 }
 
 pub fn clamp(input: f64, min: f64, max: f64) -> f64 {

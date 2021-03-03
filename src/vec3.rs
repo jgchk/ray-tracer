@@ -26,6 +26,13 @@ impl Vec3 {
         self - 2.0 * self.dot(n) * n
     }
 
+    pub fn refract(self, n: Vec3, refraction_ratio: f64) -> Vec3 {
+        let cos_theta = -self.dot(n).min(1.0);
+        let r_out_perp = refraction_ratio * (self + cos_theta * n);
+        let r_out_parallel = -(1.0 - r_out_perp.length_squared()).abs().sqrt() * n;
+        r_out_perp + r_out_parallel
+    }
+
     pub fn near_zero(self) -> bool {
         // Return true if the vector is close to zero in all dimensions
         let s = 1e-8;

@@ -9,7 +9,7 @@ mod vec3;
 use crate::camera::Camera;
 use crate::color::write_color;
 use crate::hittable::Hittable;
-use crate::material::Material::{Lambertian, Metal};
+use crate::material::Material::{Dialectric, Lambertian, Metal};
 use crate::ray::Ray;
 use crate::utils::random_double;
 use crate::vec3::Vec3;
@@ -50,15 +50,14 @@ fn main() {
         albedo: Vec3(0.8, 0.8, 0.0),
     };
     let material_center = Lambertian {
-        albedo: Vec3(0.7, 0.3, 0.3),
+        albedo: Vec3(0.1, 0.2, 0.5),
     };
-    let material_left = Metal {
-        albedo: Vec3(0.8, 0.8, 0.8),
-        fuzz: 0.3,
+    let material_left = Dialectric {
+        refraction_index: 1.5,
     };
     let material_right = Metal {
         albedo: Vec3(0.8, 0.6, 0.2),
-        fuzz: 1.0,
+        fuzz: 0.0,
     };
 
     let world = HittableList {
@@ -76,6 +75,11 @@ fn main() {
             Sphere {
                 center: Vec3(-1.0, 0.0, -1.0),
                 radius: 0.5,
+                material: &material_left,
+            },
+            Sphere {
+                center: Vec3(-1.0, 0.0, -1.0),
+                radius: -0.4,
                 material: &material_left,
             },
             Sphere {
