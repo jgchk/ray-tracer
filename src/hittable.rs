@@ -10,18 +10,18 @@ pub struct HitRecord<'a> {
     pub front_face: bool,
 }
 
-pub enum Hittable<'a> {
+pub enum Hittable {
     Sphere {
         center: Vec3,
         radius: f64,
-        material: &'a Material,
+        material: Material,
     },
     HittableList {
-        objects: Vec<Hittable<'a>>,
+        objects: Vec<Hittable>,
     },
 }
 
-impl Hittable<'_> {
+impl Hittable {
     pub fn hit(&self, r: Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         match self {
             Hittable::Sphere {

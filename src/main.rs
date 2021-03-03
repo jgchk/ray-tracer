@@ -12,10 +12,98 @@ use crate::hittable::Hittable;
 use crate::material::Material::{Dialectric, Lambertian, Metal};
 use crate::ray::Ray;
 use crate::utils::random_double;
+use crate::utils::random_range;
 use crate::vec3::Vec3;
 use crate::Hittable::{HittableList, Sphere};
 use std::f64::INFINITY;
 use std::io::{self, Write};
+
+fn random_scene() -> Hittable {
+    let mut objects: Vec<Hittable> = Vec::new();
+
+    let ground_material = Lambertian {
+        albedo: Vec3(0.5, 0.5, 0.5),
+    };
+    objects.push(Sphere {
+        center: Vec3(0.0, -1000.0, 0.0),
+        radius: 1000.0,
+        material: ground_material,
+    });
+
+    for a in -11..11 {
+        for b in -11..11 {
+            let choose_mat = random_double();
+            let center = Vec3(
+                (a as f64) + 0.9 * random_double(),
+                0.2,
+                (b as f64) + 0.9 * random_double(),
+            );
+
+            if (center - Vec3(4.0, 0.2, 0.0)).length() > 0.9 {
+                if choose_mat < 0.8 {
+                    // diffuse
+                    let albedo = Vec3::random() * Vec3::random();
+                    let sphere_material = Lambertian { albedo };
+                    objects.push(Sphere {
+                        center,
+                        radius: 0.2,
+                        material: sphere_material,
+                    });
+                } else if choose_mat < 0.95 {
+                    // metal
+                    let albedo = Vec3::random_range(0.5, 1.0);
+                    let fuzz = random_range(0.0, 0.5);
+                    let sphere_material = Metal { albedo, fuzz };
+                    objects.push(Sphere {
+                        center,
+                        radius: 0.2,
+                        material: sphere_material,
+                    });
+                } else {
+                    // glass
+                    let sphere_material = Dialectric {
+                        refraction_index: 1.5,
+                    };
+                    objects.push(Sphere {
+                        center,
+                        radius: 0.2,
+                        material: sphere_material,
+                    })
+                }
+            }
+        }
+    }
+
+    let material1 = Dialectric {
+        refraction_index: 1.5,
+    };
+    objects.push(Sphere {
+        center: Vec3(0.0, 1.0, 0.0),
+        radius: 1.0,
+        material: material1,
+    });
+
+    let material2 = Lambertian {
+        albedo: Vec3(0.4, 0.2, 0.1),
+    };
+    objects.push(Sphere {
+        center: Vec3(-4.0, 1.0, 0.0),
+        radius: 1.0,
+        material: material2,
+    });
+
+    let material3 = Metal {
+        albedo: Vec3(0.7, 0.6, 0.5),
+        fuzz: 0.0,
+    };
+    objects.push(Sphere {
+        center: Vec3(4.0, 1.0, 0.0),
+        radius: 1.0,
+        material: material3,
+    });
+
+    HittableList { objects }
+}
 
 fn ray_color(r: Ray, world: &Hittable, depth: i32) -> Vec3 {
     if depth <= 0 {
@@ -38,65 +126,23 @@ fn ray_color(r: Ray, world: &Hittable, depth: i32) -> Vec3 {
 fn main() {
     // Image
 
-    const ASPECT_RATIO: f64 = 16.0 / 9.0;
-    const IMAGE_WIDTH: i32 = 400;
+    const ASPECT_RATIO: f64 = 3.0 / 2.0;
+    const IMAGE_WIDTH: i32 = 1200;
     const IMAGE_HEIGHT: i32 = ((IMAGE_WIDTH as f64) / ASPECT_RATIO) as i32;
-    const SAMPLES_PER_PIXEL: i32 = 100;
+    const SAMPLES_PER_PIXEL: i32 = 500;
     const MAX_DEPTH: i32 = 50;
 
     // World
 
-    let material_ground = Lambertian {
-        albedo: Vec3(0.8, 0.8, 0.0),
-    };
-    let material_center = Lambertian {
-        albedo: Vec3(0.1, 0.2, 0.5),
-    };
-    let material_left = Dialectric {
-        refraction_index: 1.5,
-    };
-    let material_right = Metal {
-        albedo: Vec3(0.8, 0.6, 0.2),
-        fuzz: 0.0,
-    };
-
-    let world = HittableList {
-        objects: vec![
-            Sphere {
-                center: Vec3(0.0, -100.5, -1.0),
-                radius: 100.0,
-                material: &material_ground,
-            },
-            Sphere {
-                center: Vec3(0.0, 0.0, -1.0),
-                radius: 0.5,
-                material: &material_center,
-            },
-            Sphere {
-                center: Vec3(-1.0, 0.0, -1.0),
-                radius: 0.5,
-                material: &material_left,
-            },
-            Sphere {
-                center: Vec3(-1.0, 0.0, -1.0),
-                radius: -0.45,
-                material: &material_left,
-            },
-            Sphere {
-                center: Vec3(1.0, 0.0, -1.0),
-                radius: 0.5,
-                material: &material_right,
-            },
-        ],
-    };
+    let world = random_scene();
 
     // Camera
 
-    let look_from = Vec3(3.0, 3.0, 2.0);
-    let look_at = Vec3(0.0, 0.0, -1.0);
+    let look_from = Vec3(13.0, 2.0, 3.0);
+    let look_at = Vec3(0.0, 0.0, 0.0);
     let v_up = Vec3(0.0, 1.0, 0.0);
-    let dist_to_focus = (look_from - look_at).length();
-    let aperture = 2.0;
+    let dist_to_focus = 10.0;
+    let aperture = 0.1;
     let cam = Camera::new(
         look_from,
         look_at,
