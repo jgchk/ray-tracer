@@ -79,7 +79,7 @@ fn main() {
             },
             Sphere {
                 center: Vec3(-1.0, 0.0, -1.0),
-                radius: -0.4,
+                radius: -0.45,
                 material: &material_left,
             },
             Sphere {
@@ -92,7 +92,13 @@ fn main() {
 
     // Camera
 
-    let cam = Camera::new();
+    let cam = Camera::new(
+        Vec3(-2.0, 2.0, 1.0),
+        Vec3(0.0, 0.0, -1.0),
+        Vec3(0.0, 1.0, 0.0),
+        20.0,
+        ASPECT_RATIO,
+    );
 
     // Render
 

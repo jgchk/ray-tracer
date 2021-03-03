@@ -1,4 +1,5 @@
 use rand::prelude::*;
+use std::f64::consts::PI;
 
 pub fn random_double() -> f64 {
     random()
@@ -17,4 +18,8 @@ pub fn clamp(input: f64, min: f64, max: f64) -> f64 {
     } else {
         input
     }
+}
+
+pub fn degrees_to_radians(degrees: f64) -> f64 {
+    degrees * PI / 180.0
 }
