@@ -1,4 +1,4 @@
 #! /bin/sh
 cargo build --release
-./target/release/ray-tracer > image.ppm
+./target/release/ray-tracer > image.png
 display image.ppm

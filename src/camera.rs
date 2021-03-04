@@ -2,6 +2,7 @@ use crate::utils::degrees_to_radians;
 use crate::Ray;
 use crate::Vec3;
 
+#[derive(Copy, Clone)]
 pub struct Camera {
     origin: Vec3,
     lower_left_corner: Vec3,

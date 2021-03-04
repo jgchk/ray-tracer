@@ -10,6 +10,7 @@ pub struct HitRecord<'a> {
     pub front_face: bool,
 }
 
+#[derive(Clone)]
 pub enum Hittable {
     Sphere {
         center: Vec3,

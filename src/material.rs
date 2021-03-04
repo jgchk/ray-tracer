@@ -3,6 +3,7 @@ use crate::random_double;
 use crate::Ray;
 use crate::Vec3;
 
+#[derive(Copy, Clone)]
 pub enum Material {
     Lambertian { albedo: Vec3 },
     Metal { albedo: Vec3, fuzz: f64 },

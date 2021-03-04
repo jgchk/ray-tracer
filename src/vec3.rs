@@ -1,5 +1,6 @@
 use crate::utils::{random_double, random_range};
 use core::ops::{Add, Div, Mul, Sub};
+use std::iter::Sum;
 use std::ops::Neg;
 
 #[derive(Copy, Clone)]
@@ -138,5 +139,11 @@ impl Div<f64> for Vec3 {
 
     fn div(self, other: f64) -> Vec3 {
         self * (1.0 / other)
+    }
+}
+
+impl Sum for Vec3 {
+    fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
+        iter.fold(Vec3::origin(), Add::add)
     }
 }

@@ -7,7 +7,7 @@ mod utils;
 mod vec3;
 
 use crate::camera::Camera;
-use crate::color::write_color;
+use crate::color::process_color;
 use crate::hittable::Hittable;
 use crate::material::Material::{Dialectric, Lambertian, Metal};
 use crate::ray::Ray;
@@ -15,8 +15,12 @@ use crate::utils::random_double;
 use crate::utils::random_range;
 use crate::vec3::Vec3;
 use crate::Hittable::{HittableList, Sphere};
+use rayon::prelude::*;
 use std::f64::INFINITY;
+use std::fs::File;
+use std::io::BufWriter;
 use std::io::{self, Write};
+use std::path::Path;
 
 fn random_scene() -> Hittable {
     let mut objects: Vec<Hittable> = Vec::new();
@@ -126,7 +130,7 @@ fn ray_color(r: Ray, world: &Hittable, depth: i32) -> Vec3 {
 fn main() {
     // Image
 
-    const ASPECT_RATIO: f64 = 3.0 / 2.0;
+    const ASPECT_RATIO: f64 = 16.0 / 9.0;
     const IMAGE_WIDTH: i32 = 1200;
     const IMAGE_HEIGHT: i32 = ((IMAGE_WIDTH as f64) / ASPECT_RATIO) as i32;
     const SAMPLES_PER_PIXEL: i32 = 500;
@@ -157,20 +161,36 @@ fn main() {
 
     print!("P3\n{} {}\n255\n", IMAGE_WIDTH, IMAGE_HEIGHT);
 
+    let mut pixels: Vec<u8> = Vec::new();
+
     for j in (0..IMAGE_HEIGHT).rev() {
         eprint!("\rScanlines remaining: {} ", j);
         io::stderr().flush().unwrap();
         for i in 0..IMAGE_WIDTH {
-            let mut pixel_color = Vec3::origin();
-            for _ in 0..SAMPLES_PER_PIXEL {
-                let u = ((i as f64) + random_double()) / ((IMAGE_WIDTH - 1) as f64);
-                let v = ((j as f64) + random_double()) / ((IMAGE_HEIGHT - 1) as f64);
-                let r = cam.get_ray(u, v);
-                pixel_color = pixel_color + ray_color(r, &world, MAX_DEPTH);
-            }
-            write_color(pixel_color, SAMPLES_PER_PIXEL);
+            let pixel_color = (0..SAMPLES_PER_PIXEL)
+                .into_par_iter()
+                .map(|_| {
+                    let u = ((i as f64) + random_double()) / ((IMAGE_WIDTH - 1) as f64);
+                    let v = ((j as f64) + random_double()) / ((IMAGE_HEIGHT - 1) as f64);
+                    let r = cam.get_ray(u, v);
+                    ray_color(r, &world, MAX_DEPTH)
+                })
+                .sum();
+            let pixel = process_color(pixel_color, SAMPLES_PER_PIXEL);
+            pixels.extend(&pixel);
         }
     }
+
+    let path = Path::new(r"image.png");
+    let file = File::create(path).unwrap();
+    let ref mut w = BufWriter::new(file);
+
+    let mut encoder = png::Encoder::new(w, IMAGE_WIDTH as u32, IMAGE_HEIGHT as u32);
+    encoder.set_color(png::ColorType::RGB);
+    encoder.set_depth(png::BitDepth::Eight);
+
+    let mut writer = encoder.write_header().unwrap();
+    writer.write_image_data(&pixels).unwrap();
 
     eprintln!("\nDone.")
 }
